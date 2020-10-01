@@ -1,0 +1,15 @@
+name: Build docker image and publish
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: base-docker
+        registry: docker.opensafely.org
+        username: docker
+        password: ${{ secrets.OPENSAFELY_DOCKER_PASSWORD }}
+        buildargs:
