@@ -11,8 +11,11 @@ test "${UPGRADE:-}" = "yes" && apt-get upgrade --yes
 
 for arg in "$@"; do
     if test -f $arg; then
+        # argument is a file
+        # strip any comments and install every package listed in the file
         sed 's/^#.*//' "$arg" | xargs apt-get install --yes --no-install-recommends
     else
+        # argument is a package name, just install it
         apt-get install --yes --no-install-recommends
     fi
 done
