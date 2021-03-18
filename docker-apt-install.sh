@@ -16,7 +16,7 @@ for arg in "$@"; do
         sed 's/^#.*//' "$arg" | xargs apt-get install --yes --no-install-recommends
     else
         # argument is a package name, just install it
-        apt-get install --yes --no-install-recommends
+        apt-get install --yes --no-install-recommends "$arg"
     fi
 done
 
