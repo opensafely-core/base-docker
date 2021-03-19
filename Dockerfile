@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.2
 FROM ubuntu:20.04
 
 # default env vars
@@ -7,8 +8,7 @@ ENV container=docker DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8
 LABEL maintainer="tech@opensafely.org" \
       org.label-schema.schema-version="1.0" \
       org.label-schema.url="opensafely.org" \
-      org.label-schema.vendor="OpenSAFELY" \
-      org.opensafely.base=true
+      org.label-schema.vendor="OpenSAFELY"
 
 # useful utility for installing apt packages in the most space efficient way
 # possible.  It's worth it because this is the base image, and so any bloat
@@ -22,3 +22,10 @@ RUN UPGRADE=yes /root/docker-apt-install.sh sysstat lsof net-tools tcpdump vim s
 
 COPY entrypoint.sh /root/entrypoint.sh
 ENTRYPOINT ["/root/entrypoint.sh"]
+
+# record build info so downstream images know about the base image they were
+# built from
+ARG BASE_BUILD_DATE
+ARG BASE_GITREF
+LABEL org.opensafely.base.build-date=$BASE_BUILD_DATE \
+      org.opensafely.base.vcs-ref=$BASE_GITREF
