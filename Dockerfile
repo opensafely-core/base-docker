@@ -18,3 +18,7 @@ COPY docker-apt-install.sh /root/docker-apt-install.sh
 
 # install some base tools we want in all images
 RUN UPGRADE=yes /root/docker-apt-install.sh sysstat lsof net-tools tcpdump vim strace
+
+
+COPY entrypoint.sh /root/entrypoint.sh
+ENTRYPOINT ["/root/entrypoint.sh"]
