@@ -18,3 +18,9 @@ test: RUN_ARGS=
 endif
 test:
 	docker run $(RUN_ARGS) --rm -v $(PWD):/tests -w /tests $(IMAGE_NAME) ./tests.sh
+
+
+.PHONY: lint
+lint:
+	@docker pull hadolint/hadolint
+	@docker run --rm -i hadolint/hadolint < Dockerfile
