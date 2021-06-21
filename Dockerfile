@@ -18,7 +18,7 @@ LABEL org.opencontainers.image.authors="tech@opensafely.org" \
 COPY docker-apt-install.sh /root/docker-apt-install.sh
 
 # install some base tools we want in all images
-RUN UPGRADE=yes /root/docker-apt-install.sh sysstat lsof net-tools tcpdump vim strace
+RUN UPGRADE=yes /root/docker-apt-install.sh ca-certificates sysstat lsof net-tools tcpdump vim strace
 
 # record build info so downstream images know about the base image they were
 # built from
@@ -29,6 +29,6 @@ LABEL org.opensafely.base.build-date=$BASE_BUILD_DATE \
 
 FROM base-docker as base-action
 
-# special action entrypoing
+# special action entrypoint
 COPY entrypoint.sh /root/entrypoint.sh
 ENTRYPOINT ["/root/entrypoint.sh"]
