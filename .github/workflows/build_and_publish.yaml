@@ -25,7 +25,7 @@ jobs:
     - name: Push image to GitHub Container Registry
       run: |
         BASE_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$BASE_IMAGE_NAME
-        ACTION_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/ACTION_IMAGE_NAME
+        ACTION_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$ACTION_IMAGE_NAME
         docker tag $BASE_IMAGE_NAME $BASE_IMAGE_ID:latest
         docker tag $ACTION_IMAGE_NAME $ACTION_IMAGE_ID:latest
         docker push $BASE_IMAGE_ID:latest
