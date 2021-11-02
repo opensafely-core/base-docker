@@ -5,6 +5,8 @@ on:
   schedule:
     # build and publish a new base image every week at 04:17am on mondays
     - cron: "17 04 * * 1"
+  # let us manually trigger a build
+  workflow_dispatch:
 env:
   BASE_IMAGE_NAME: base-docker
   ACTION_IMAGE_NAME: base-action
