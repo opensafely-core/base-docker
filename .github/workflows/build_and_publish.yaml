@@ -28,7 +28,19 @@ jobs:
       run: |
         BASE_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$BASE_IMAGE_NAME
         ACTION_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$ACTION_IMAGE_NAME
-        docker tag $BASE_IMAGE_NAME $BASE_IMAGE_ID:latest
-        docker tag $ACTION_IMAGE_NAME $ACTION_IMAGE_ID:latest
+        # tag the local images with the published names
+        docker tag $BASE_IMAGE_NAME:20.04 $BASE_IMAGE_ID:20.04
+        docker tag $BASE_IMAGE_NAME:22.04 $BASE_IMAGE_ID:22.04
+        # action images are 20.04 based currently
+        docker tag $ACTION_IMAGE_NAME:20.04 $ACTION_IMAGE_ID:20.04
+
+        # push each label up
+        docker push $BASE_IMAGE_ID:20.04
+        docker push $BASE_IMAGE_ID:22.04
+        docker push $ACTION_IMAGE_ID:20.04
+        
+        # latest tags are 20.04 for b/w compat
+        docker tag $BASE_IMAGE_NAME:20.04 $BASE_IMAGE_ID:latest
+        docker tag $ACTION_IMAGE_NAME:20.04 $ACTION_IMAGE_ID:latest
         docker push $BASE_IMAGE_ID:latest
         docker push $ACTION_IMAGE_ID:latest
