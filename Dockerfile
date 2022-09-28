@@ -1,5 +1,8 @@
 # syntax=docker/dockerfile:1.2
-FROM ubuntu:20.04 as base-docker
+ARG UBUNTU_IMAGE=ubuntu:20.04
+# we are parameterizing the base image, so we can't be explicit like DL3006 wants us to be
+# hadolint ignore=DL3006
+FROM $UBUNTU_IMAGE as base-docker
 
 # default env vars
 ENV container=docker DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8
