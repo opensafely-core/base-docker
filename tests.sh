@@ -38,7 +38,7 @@ EOF
 # test that the entrypoint is invoked properly
 test_entrypoint() {
     local exe output expected
-    output=$(/root/entrypoint.sh "$@")
+    output=$(/usr/local/bin/entrypoint.sh "$@")
     if test -n "${ACTION_EXEC:-}"; then
         expected="${script} $*"
     else

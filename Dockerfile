@@ -34,5 +34,5 @@ LABEL org.opensafely.base.build-date=$BASE_BUILD_DATE \
 FROM base-docker as base-action
 
 # special action entrypoint
-COPY entrypoint.sh /root/entrypoint.sh
-ENTRYPOINT ["/root/entrypoint.sh"]
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
