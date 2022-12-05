@@ -1,0 +1,37 @@
+services:
+  base-docker:
+    build:
+      context: .
+      target: base-docker
+      cache_from:  # should speed up the build in CI, where we have a cold cache
+        - ghcr.io/opensafely-core/base-docker
+      args:
+        # this makes the image work for later cache_from: usage
+        - BUILDKIT_INLINE_CACHE=1
+        # env vars supplied by make/just
+        - BASE_BUILD_DATE
+        - BASE_GITREF
+    init: true
+
+  base-docker-20.04:
+    extends: base-docker
+    image: "base-docker:20.04"
+    build:
+      args:
+        - UBUNTU_VERSION=ubuntu:20.04
+
+  base-docker-22.04:
+    extends: base-docker
+    image: "base-docker:22.04"
+    build:
+      args:
+        - UBUNTU_VERSION=ubuntu:22.04
+
+  base-action:
+    extends: base-docker
+    image: "base-action:20.04"
+    build:
+      args:
+        - UBUNTU_VERSION=ubuntu:20.04
+      target: base-action
+

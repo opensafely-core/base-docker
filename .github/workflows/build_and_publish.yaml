@@ -17,7 +17,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
     - name: Build image
-      run: make clean-build
+      run: make build
     - name: Run tests
       run: make test
     - name: Run lint
