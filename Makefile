@@ -23,8 +23,7 @@ test: RUN_ARGS=
 endif
 test: build
 	docker run $(RUN_ARGS) --rm -v $(PWD):/tests -w /tests $(ACTION_IMAGE_NAME):20.04 ./tests.sh
-	./check-labels.sh
-
+	./check.sh
 
 .PHONY: lint
 lint:

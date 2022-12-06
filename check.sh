@@ -4,6 +4,11 @@ set -euo pipefail
 failed=0
 for image in base-docker:20.04 base-docker:22.04 base-action:20.04
 do
+    tag=$(echo $image | awk -F: '{print $NF}')
+    os_version=$(docker run $image grep VERSION_ID= /etc/os-release)
+    echo "$image: OS $os_version"
+    test "$os_version" = "VERSION_ID=\"${tag}\"" || { failed=1; echo "Expected os version to be $tag"; }
+
     for label in build-date vcs-ref
     do
         full="org.opensafely.base.$label"
