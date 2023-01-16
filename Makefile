@@ -21,7 +21,7 @@ test: RUN_ARGS=-it
 else
 test: RUN_ARGS=
 endif
-test: build
+test:
 	docker run $(RUN_ARGS) --rm -v $(PWD):/tests -w /tests $(ACTION_IMAGE_NAME):20.04 ./tests.sh
 	./check.sh
 
