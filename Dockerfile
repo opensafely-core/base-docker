@@ -22,7 +22,7 @@ COPY docker-apt-install.sh /root/docker-apt-install.sh
 
 # install some base tools we want in all images
 RUN --mount=type=cache,target=/var/cache/apt \
-     UPGRADE=yes /root/docker-apt-install.sh ca-certificates sysstat lsof net-tools tcpdump vim strace
+     UPGRADE=yes /root/docker-apt-install.sh ca-certificates sysstat lsof net-tools tcpdump vim strace file
 
 # record build info so downstream images know about the base image they were
 # built from
