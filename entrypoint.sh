@@ -14,7 +14,7 @@ is_real_executable() {
     fi
 
     # check for binfmt
-    if file "$path" | grep -q ELF; then
+    if file -L "$path" | grep -q ELF; then
         return 0
     fi
 
