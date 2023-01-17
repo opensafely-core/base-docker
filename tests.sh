@@ -32,7 +32,7 @@ output=$(mktemp /tmp/output.XXXX)
 
 # test that the entrypoint is invoked properly
 test_entrypoint() {
-    if /usr/local/bin/entrypoint.sh "$@" > "$output" 2>&1; then
+    if ./entrypoint.sh "$@" > "$output" 2>&1; then
         success "entrypoint.sh $*"
     else
         failure "'entrypoint.sh $* exited with $?"
@@ -67,6 +67,7 @@ cat > "$script" << 'EOF'
 echo "$0" "$@"
 EOF
 
+
 export ACTION_EXEC=$script
 
 # no args
@@ -86,6 +87,11 @@ assert_output "$output" "$script a -b --ccc"
 test_entrypoint dash -c 'echo SUCCESS'
 assert_output "$output" "SUCCESS"
 
+# check we dereference symlinks
+# create a symlink to bash in the current dir, so we can use it mounted in /workspace
+ln -sf "/usr/bin/bash" "bash.link"
+test_entrypoint ./bash.link -c "echo SUCCESS"
+assert_output "$output" "SUCCESS"
 
 non_exec_script=$(mktemp /tmp/user_script.XXXX)
 echo SUCCESS > "$non_exec_script"
@@ -99,6 +105,9 @@ assert_output "$output" "SUCCESS"
 chmod +x "$non_exec_script"
 test_entrypoint "$non_exec_script"
 assert_output "$output" "SUCCESS"
+
+
+
 
 
 exit $failed
