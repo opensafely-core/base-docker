@@ -27,11 +27,20 @@ services:
       args:
         - UBUNTU_VERSION=ubuntu:22.04
 
-  base-action:
+  base-action-20.04:
     extends: base-docker
     image: "base-action:20.04"
     build:
       args:
         - UBUNTU_VERSION=ubuntu:20.04
       target: base-action
+
+  base-action-22.04:
+    extends: base-docker
+    image: "base-action:22.04"
+    build:
+      args:
+        - UBUNTU_VERSION=ubuntu:22.04
+      target: base-action
+
 
