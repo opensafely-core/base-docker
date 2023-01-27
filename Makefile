@@ -9,7 +9,7 @@ export BASE_GITREF=$(shell git rev-parse --short HEAD)
 
 
 build:
-	docker-compose build --pull $(ARGS) base-docker-20.04 base-docker-22.04 base-action
+	docker-compose build --pull $(ARGS) base-docker-20.04 base-docker-22.04 base-action-20.04 base-action-22.04
 
 clean-build: ARGS=--no-cache
 clean-build: build
@@ -23,6 +23,7 @@ test: RUN_ARGS=
 endif
 test:
 	docker run $(RUN_ARGS) --rm -v $(PWD):/tests -w /tests $(ACTION_IMAGE_NAME):20.04 ./tests.sh
+	docker run $(RUN_ARGS) --rm -v $(PWD):/tests -w /tests $(ACTION_IMAGE_NAME):22.04 ./tests.sh
 	./check.sh
 
 .PHONY: lint
