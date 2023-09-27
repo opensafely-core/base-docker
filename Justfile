@@ -6,6 +6,12 @@ _default:
 build:
   make build
 
+# regenerate static dockerfiles from template
+regenerate_dockerfiles:
+  echo "Not implemented, please do this manually, e.g." \
+    "'cp ubuntu-template.Dockerfile ubuntu-20.04.Dockerfile'" \
+    "etc"
+
 # hadolint the Dockerfile
 lint:
   @docker pull hadolint/hadolint

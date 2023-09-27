@@ -17,6 +17,7 @@ services:
     extends: base-docker
     image: "base-docker:20.04"
     build:
+      dockerfile: ubuntu-20.04.Dockerfile
       args:
         - UBUNTU_VERSION=ubuntu:20.04
 
@@ -24,6 +25,7 @@ services:
     extends: base-docker
     image: "base-docker:22.04"
     build:
+      dockerfile: ubuntu-22.04.Dockerfile
       args:
         - UBUNTU_VERSION=ubuntu:22.04
 
@@ -31,6 +33,7 @@ services:
     extends: base-docker
     image: "base-action:20.04"
     build:
+      dockerfile: ubuntu-20.04.Dockerfile
       args:
         - UBUNTU_VERSION=ubuntu:20.04
       target: base-action
@@ -39,6 +42,7 @@ services:
     extends: base-docker
     image: "base-action:22.04"
     build:
+      dockerfile: ubuntu-22.04.Dockerfile
       args:
         - UBUNTU_VERSION=ubuntu:22.04
       target: base-action
