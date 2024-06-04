@@ -6,7 +6,7 @@ export BASE_GITREF=$(shell git rev-parse --short HEAD)
 
 
 build:
-	docker compose build --pull $(ARGS) base-docker-20.04 base-docker-22.04 base-action-20.04 base-action-22.04
+	docker compose build --pull $(ARGS)
 
 clean-build: ARGS=--no-cache
 clean-build: build
