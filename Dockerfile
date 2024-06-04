@@ -16,8 +16,7 @@ LABEL org.opencontainers.image.authors="tech@opensafely.org" \
 
 # Disable automatic cache cleaning, and make `apt install` preserve caches.
 # This implies we should always use RUN --mount=cache on apt installs
-# Taken from:
-# https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#example-cache-apt-packages
+# Taken from docs: https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
 # useful utility for installing apt packages in the most space efficient way
@@ -27,7 +26,9 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloa
 COPY docker-apt-install.sh /root/docker-apt-install.sh
 
 # install some base tools we want in all images
+# caching from docs: https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
      UPGRADE=yes /root/docker-apt-install.sh ca-certificates sysstat lsof net-tools tcpdump vim strace file
 
 # record build info so downstream images know about the base image they were
