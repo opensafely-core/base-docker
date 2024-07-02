@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-executable=${ACTION_EXEC:-bash}
+script_executable=${ACTION_EXEC:-bash}
+interactive_executable=${INTERACTIVE_EXEC:-$script_executable}
 
 is_real_executable() {
     local path shebang 
@@ -23,6 +24,11 @@ is_real_executable() {
 }
 
 if test -n "${1:-}"; then
+    # we have arguments, so default to executing a file
+    executable=$script_executable
+
+    # However, check if the first argument is a valid executable, and use that instead.
+    # This allows a pattern of `docker run image exec` to run whatever excuteable you want.
     if command -v -- "$1" >/dev/null 2>&1; then
         # on windows, all files have executable mask, so check it is actually executable
         if is_real_executable "$1"; then
@@ -32,6 +38,10 @@ if test -n "${1:-}"; then
             shift
         fi
     fi
+
+else
+    # no arguments - we want the interactive executable
+    executable=$interactive_executable
 fi
 
 exec "$executable" "$@"
