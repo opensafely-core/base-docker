@@ -35,8 +35,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # built from
 ARG BASE_BUILD_DATE
 ARG BASE_GITREF
-LABEL org.opensafely.base.build-date=$BASE_BUILD_DATE \
-      org.opensafely.base.vcs-ref=$BASE_GITREF
+LABEL org.opensafely.base.created=$BASE_BUILD_DATE \
+      org.opensafely.base.gitref=$BASE_GITREF
 
 FROM base-docker as base-action
 

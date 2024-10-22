@@ -9,7 +9,7 @@ do
     echo "$image: OS $os_version"
     test "$os_version" = "VERSION_ID=\"${tag}\"" || { failed=1; echo "Expected os version to be $tag"; }
 
-    for label in build-date vcs-ref
+    for label in created gitref
     do
         full="org.opensafely.base.$label"
         value="$(docker inspect -f "{{ index .Config.Labels \"$full\" }}" "$image")"
