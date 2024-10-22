@@ -16,11 +16,6 @@ LABEL org.opencontainers.image.authors="tech@opensafely.org" \
       org.opencontainers.image.vendor="OpenSAFELY" \
       org.opencontainers.image.source="https://github.com/opensafely-core/base-docker"
 
-# Disable automatic cache cleaning, and make `apt install` preserve caches.
-# This implies we should always use RUN --mount=cache on apt installs
-# Taken from docs: https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
-RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
-
 # useful utility for installing apt packages in the most space efficient way
 # possible.  It's worth it because this is the base image, and so any bloat
 # here affects all our images. Plus, it's then available for downstream images
@@ -28,10 +23,14 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloa
 COPY docker-apt-install.sh /root/docker-apt-install.sh
 
 # install some base tools we want in all images
-# caching from docs: https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-     UPGRADE=yes /root/docker-apt-install.sh ca-certificates sysstat lsof net-tools tcpdump vim strace file
+# Ccaching from docs: https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
+# Enable full caching of apt packages and metadata, undoing the debian defaults.
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked <<EOF
+  rm -f /etc/apt/apt.conf.d/docker-clean
+  echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+  UPGRADE=yes /root/docker-apt-install.sh ca-certificates sysstat lsof net-tools tcpdump vim strace file
+EOF
+
 
 # record build info so downstream images know about the base image they were
 # built from
