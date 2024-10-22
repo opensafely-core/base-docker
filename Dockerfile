@@ -1,4 +1,6 @@
-# syntax=docker/dockerfile:1.2
+# syntax=docker/dockerfile:1.10
+# enable docker linting
+# check=error=true
 ARG UBUNTU_VERSION=ubuntu:20.04
 # we are parameterizing the base image, so we can't be explicit like DL3006 wants us to be
 # hadolint ignore=DL3006
