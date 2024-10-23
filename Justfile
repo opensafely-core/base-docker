@@ -43,3 +43,24 @@ _update-sha os:
   echo {{ os }}
   docker image pull {{ os }}
   docker inspect --format='{{{{index .RepoDigests 0}}' {{ os }} > {{ os }}.sha
+
+
+publish-images:
+  #!/bin/bash
+  set -euo pipefail
+  for version in 20.04 22.04 24.04
+  do 
+      for image_name in base-docker base-action
+      do
+        image="$image_name:$version"
+        full="ghcr.io/openasfely-core/$image"
+        docker tag $image $full
+        docker push $full
+      done
+  done
+
+  # latest tags are 20.04 for b/w compat
+  docker tag base-docker:20.04 ghcr.io/opensafely-core/base-docker:latest
+  docker tag base-action:20.04 ghcr.io/opensafely-core/base-action:latest
+  docker push ghcr.io/opensafely-core/base-docker:latest
+  docker push ghcr.io/opensafely-core/base-action:latest

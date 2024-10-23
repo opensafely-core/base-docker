@@ -16,9 +16,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
-    - name: Build image
-      run: make build
     - uses: extractions/setup-just@69d82fb0233557aec017ef13706851d0694e0f1d
+    - name: Build image
+      run: just build
     - name: Run tests
       run: just test
     - name: Run lint
@@ -26,27 +26,4 @@ jobs:
     - name: Log into GitHub Container Registry
       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Push image to GitHub Container Registry
-      run: |
-        BASE_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$BASE_IMAGE_NAME
-        ACTION_IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$ACTION_IMAGE_NAME
-        # tag the local images with the published names
-        docker tag $BASE_IMAGE_NAME:20.04 $BASE_IMAGE_ID:20.04
-        docker tag $BASE_IMAGE_NAME:22.04 $BASE_IMAGE_ID:22.04
-        docker tag $BASE_IMAGE_NAME:24.04 $BASE_IMAGE_ID:24.04
-        docker tag $ACTION_IMAGE_NAME:20.04 $ACTION_IMAGE_ID:20.04
-        docker tag $ACTION_IMAGE_NAME:22.04 $ACTION_IMAGE_ID:22.04
-        docker tag $ACTION_IMAGE_NAME:24.04 $ACTION_IMAGE_ID:24.04
-
-        # push each label up
-        docker push $BASE_IMAGE_ID:20.04
-        docker push $BASE_IMAGE_ID:22.04
-        docker push $BASE_IMAGE_ID:24.04
-        docker push $ACTION_IMAGE_ID:20.04
-        docker push $ACTION_IMAGE_ID:22.04
-        docker push $ACTION_IMAGE_ID:24.04
-        
-        # latest tags are 20.04 for b/w compat
-        docker tag $BASE_IMAGE_NAME:20.04 $BASE_IMAGE_ID:latest
-        docker tag $ACTION_IMAGE_NAME:20.04 $ACTION_IMAGE_ID:latest
-        docker push $BASE_IMAGE_ID:latest
-        docker push $ACTION_IMAGE_ID:latest
+      run: just publish-images
