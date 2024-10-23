@@ -53,7 +53,7 @@ publish-images:
       for image_name in base-docker base-action
       do
         image="$image_name:$version"
-        full="ghcr.io/openasfely-core/$image"
+        full="ghcr.io/opensafely-core/$image"
         docker tag $image $full
         docker push $full
       done
