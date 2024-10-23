@@ -9,7 +9,7 @@ services:
         # this makes the image work for later cache_from: usage
         - BUILDKIT_INLINE_CACHE=1
         # env vars supplied by make/just
-        - BASE_BUILD_DATE
+        - BASE_CREATED
         - BASE_GITREF
     init: true
 
@@ -27,6 +27,13 @@ services:
       args:
         - UBUNTU_VERSION=ubuntu:22.04
 
+  base-docker-24.04:
+    extends: base-docker
+    image: "base-docker:24.04"
+    build:
+      args:
+        - UBUNTU_VERSION=ubuntu:24.04
+
   base-action-20.04:
     extends: base-docker
     image: "base-action:20.04"
@@ -43,4 +50,10 @@ services:
         - UBUNTU_VERSION=ubuntu:22.04
       target: base-action
 
-
+  base-action-24.04:
+    extends: base-docker
+    image: "base-action:24.04"
+    build:
+      args:
+        - UBUNTU_VERSION=ubuntu:24.04
+      target: base-action

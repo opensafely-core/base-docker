@@ -21,11 +21,8 @@ for arg in "$@"; do
     fi
 done
 
+# shellcheck disable=SC2086
 test -n "$PACKAGES" && apt-get install --yes --no-install-recommends $PACKAGES
 
 # clean up if we've upgraded
 test "${UPGRADE:-}" = "yes" && apt-get autoremove --yes
-
-# We do not apt-get clean becuase the default debian docker apt config does that for us.
-# Doing this saves us ~50MB, but means we need to apt-get update before we can install anything again
-rm -rf /var/lib/apt/lists/*
