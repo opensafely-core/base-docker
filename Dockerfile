@@ -23,7 +23,7 @@ LABEL org.opencontainers.image.authors="tech@opensafely.org" \
 COPY docker-apt-install.sh /root/docker-apt-install.sh
 
 # install some base tools we want in all images
-# Ccaching from docs: https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
+# Caching from docs: https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
 # Enable full caching of apt packages and metadata, undoing the debian defaults.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked <<EOF
   rm -f /etc/apt/apt.conf.d/docker-clean
