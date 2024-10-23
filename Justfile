@@ -3,14 +3,22 @@ export ACTION_IMAGE_NAME := env_var_or_default('ACTION_IMAGE_NAME', "base-action
 _default:
   @just --list
 
-build:
-  make build
+# build all images
+build *args:
+  #!/bin/bash
+  export DOCKER_BUILDKIT=1
+  export BASE_CREATED=$(date --utc +'%Y-%m-%dT%H:%M:%S+00:00')
+  export BASE_GITREF=$(git rev-parse --short HEAD)
+  docker compose build --pull {{ args }}
+
+clean-build: (build "--no-cache")
 
 # hadolint the Dockerfile
 lint:
   @docker pull hadolint/hadolint
   @docker run --rm -i hadolint/hadolint < Dockerfile
 
+# build and test all images
 test: build
   #!/bin/bash
   set -euxo pipefail

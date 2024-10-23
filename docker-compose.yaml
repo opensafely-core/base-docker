@@ -9,7 +9,7 @@ services:
         # this makes the image work for later cache_from: usage
         - BUILDKIT_INLINE_CACHE=1
         # env vars supplied by make/just
-        - BASE_BUILD_DATE
+        - BASE_CREATED
         - BASE_GITREF
     init: true
 

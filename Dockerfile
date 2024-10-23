@@ -34,9 +34,9 @@ EOF
 
 # record build info so downstream images know about the base image they were
 # built from
-ARG BASE_BUILD_DATE
+ARG BASE_CREATED
 ARG BASE_GITREF
-LABEL org.opensafely.base.created=$BASE_BUILD_DATE \
+LABEL org.opensafely.base.created=$BASE_CREATED \
       org.opensafely.base.gitref=$BASE_GITREF
 
 FROM base-docker as base-action
