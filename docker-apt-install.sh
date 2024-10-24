@@ -1,6 +1,6 @@
 #!/bin/bash
 # Useful utility to install system packages from a file
-# It does so in the lowest footprint way possible, by removing apt lists afterwards
+# It does so in the lowest footprint way possible, in a single RUN command.
 set -euo pipefail
 
 # ensure apt lists are populated
@@ -21,8 +21,12 @@ for arg in "$@"; do
     fi
 done
 
-# shellcheck disable=SC2086
-test -n "$PACKAGES" && apt-get install --yes --no-install-recommends $PACKAGES
+if test -n "$PACKAGES"; then
+    # shellcheck disable=SC2086
+    apt-get install --yes --no-install-recommends $PACKAGES
+fi
 
 # clean up if we've upgraded
-test "${UPGRADE:-}" = "yes" && apt-get autoremove --yes
+if test "${UPGRADE:-}" = "yes"; then
+    apt-get autoremove --yes 
+fi
