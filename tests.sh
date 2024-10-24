@@ -58,6 +58,9 @@ test_executable vim
 test_executable strace
 
 
+# test install works w/o UPDATE=yes
+/root/docker-apt-install.sh make
+
 # test script that just echos its arguments for testing
 script=$(mktemp /tmp/action_exec.XXXX.sh)
 chmod +x "$script"
