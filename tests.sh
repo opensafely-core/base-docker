@@ -61,6 +61,25 @@ test_executable strace
 # test install works w/o UPDATE=yes
 /root/docker-apt-install.sh make
 
+# test ubuntu pro
+if grep -q 'VERSION_ID="20.04"' /etc/os-release; then
+
+  # check we are using packages from ESM archives 
+  dpkg-query -W -f='${Package}\t${Version}\n' libssl1.1 > "$output"
+  assert_output "$output" "esm"
+ 
+  # check we have not left any files with the token on the image
+  if test ! -e /tmp/pro-attach-config.yaml &&
+    test ! -d /etc/ubuntu-advantage &&
+    test ! -d /var/lib/ubuntu-advantage &&
+    test ! -e /var/log/ubuntu-advantage.log &&
+    ! dpkg -l | grep -q ubuntu-pro-client; then
+    success "no Ubuntu Pro files found"
+  else
+    failure "Found Ubuntu Pro file that should not be in the image"
+  fi
+fi
+
 # test script that just echos its arguments for testing
 script=$(mktemp /tmp/action_exec.XXXX.sh)
 chmod +x "$script"
@@ -109,9 +128,4 @@ chmod +x "$non_exec_script"
 test_entrypoint "$non_exec_script"
 assert_output "$output" "SUCCESS"
 
-
-
-
-
 exit $failed
-
