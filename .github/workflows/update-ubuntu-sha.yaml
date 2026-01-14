@@ -22,7 +22,7 @@ jobs:
     - name: Commit file
       run: |
         git status
-        git add *.sha
+        git add "*.sha"
         if git diff-index --quiet HEAD; then
           exit
         fi

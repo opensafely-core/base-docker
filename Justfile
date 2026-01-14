@@ -15,8 +15,9 @@ clean-build: (build "--no-cache")
 
 # hadolint the Dockerfile
 lint:
-  @docker pull hadolint/hadolint
   @docker run --rm -i hadolint/hadolint < Dockerfile
+  @ls *.sh | xargs docker run --rm -v "$PWD:/mnt:ro" koalaman/shellcheck:v0.11.0
+  @docker run --rm -v "$PWD:/repo:ro" --workdir /repo rhysd/actionlint:1.7.10 -color
 
 # build and test all images
 test: build
