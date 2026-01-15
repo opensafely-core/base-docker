@@ -54,7 +54,7 @@ test_executable iostat
 test_executable lsof
 test_executable netstat
 test_executable tcpdump
-test_executable vim
+test_executable vi
 test_executable strace
 
 
