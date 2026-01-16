@@ -1,11 +1,27 @@
+set dotenv-load := true
+
 export ACTION_IMAGE_NAME := env_var_or_default('ACTION_IMAGE_NAME', "base-action")
+export UBUNTU_PRO_TOKEN_FILE := env_var_or_default('UBUNTU_PRO_TOKEN_FILE', justfile_directory() + "/.secrets/ubuntu_pro_token")
 
 _default:
   @just --list
 
-# build all images
-build *args:
+ensure-pro-token:
   #!/bin/bash
+  set -euo pipefail
+  token_file="{{ UBUNTU_PRO_TOKEN_FILE }}"
+  if test -z "${UBUNTU_PRO_TOKEN:-}"; then
+    echo "UBUNTU_PRO_TOKEN is required to create $token_file" >&2
+    exit 1
+  fi
+  mkdir -p "$(dirname "$token_file")"
+  umask 077
+  printf '%s' "$UBUNTU_PRO_TOKEN" > "$token_file"
+
+# build all images
+build *args: ensure-pro-token
+  #!/bin/bash
+  set -euo pipefail
   export DOCKER_BUILDKIT=1
   export BASE_CREATED=$(date --utc +'%Y-%m-%dT%H:%M:%S+00:00')
   export BASE_GITREF=$(git rev-parse --short HEAD)
@@ -15,8 +31,9 @@ clean-build: (build "--no-cache")
 
 # hadolint the Dockerfile
 lint:
-  @docker pull hadolint/hadolint
   @docker run --rm -i hadolint/hadolint < Dockerfile
+  @ls *.sh | xargs docker run --rm -v "$PWD:/mnt:ro" koalaman/shellcheck:v0.11.0
+  @docker run --rm -v "$PWD:/repo:ro" --workdir /repo rhysd/actionlint:1.7.10 -color
 
 # build and test all images
 test: build

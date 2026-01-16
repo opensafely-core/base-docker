@@ -10,6 +10,7 @@ on:
 env:
   BASE_IMAGE_NAME: base-docker
   ACTION_IMAGE_NAME: base-action
+  UBUNTU_PRO_TOKEN: ${{ secrets.UBUNTU_PRO_TOKEN }}
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -25,7 +25,9 @@ COPY docker-apt-install.sh /root/docker-apt-install.sh
 # install some base tools we want in all images
 # Caching from docs: https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
 # Enable full caching of apt packages and metadata, undoing the debian defaults.
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked <<EOF
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    --mount=type=secret,id=ubuntu_pro_token <<EOF
   rm -f /etc/apt/apt.conf.d/docker-clean
   echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
   UPGRADE=yes /root/docker-apt-install.sh ca-certificates sysstat lsof net-tools tcpdump vim-tiny strace file

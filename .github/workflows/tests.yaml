@@ -3,6 +3,7 @@ on:
   pull_request:
 env:
   IMAGE_NAME: base-docker
+  UBUNTU_PRO_TOKEN: ${{ secrets.UBUNTU_PRO_TOKEN }}
 jobs:
   build:
     runs-on: ubuntu-latest
