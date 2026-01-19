@@ -32,6 +32,9 @@ EOF
         pro attach --attach-config /tmp/pro-attach-config.yaml
         rm -f /tmp/pro-attach-config.yaml
         pro_attached=1
+    else
+        echo "ubuntu_pro_token secret is required for 20.04 build"
+        exit 1
     fi
 fi
 
