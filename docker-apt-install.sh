@@ -2,12 +2,11 @@
 # Useful utility to install system packages from a file
 # It does so in the lowest footprint way possible, in a single RUN command.
 set -euo pipefail
+set -x
 
 pro_attached=0
 pro_token_file=/run/secrets/ubuntu_pro_token
 
-# ensure apt lists are populated
-apt-get update
 
 if grep -q 'VERSION_ID="20.04"' /etc/os-release; then
     # enable ubuntu pro, based on the example in the Canonical docs:
@@ -22,6 +21,7 @@ if grep -q 'VERSION_ID="20.04"' /etc/os-release; then
     #  - esm-infra: core infra packages
     #  - esm-apps: applications and server packages
     if test -s "$pro_token_file"; then
+        apt-get update
         apt-get install --no-install-recommends -y ubuntu-pro-client ca-certificates
         cat > /tmp/pro-attach-config.yaml <<EOF
 token: $(cat "$pro_token_file")
@@ -34,6 +34,9 @@ EOF
         pro_attached=1
     fi
 fi
+
+# ensure apt lists are populated
+apt-get update
 
 # do we want to upgrade too?
 test "${UPGRADE:-}" = "yes" && apt-get upgrade --yes
