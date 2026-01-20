@@ -13,6 +13,9 @@ services:
         # env vars supplied by make/just
         - BASE_CREATED
         - BASE_GITREF
+    # we also need to pass the secret at runtime for tests.sh to use.
+    secrets:
+      - ubuntu_pro_token
     init: true
 
   base-docker-20.04:
