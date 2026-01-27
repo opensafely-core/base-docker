@@ -23,28 +23,28 @@ services:
     image: "base-docker:20.04"
     build:
       args:
-        - UBUNTU_VERSION=ubuntu:20.04
+        - UBUNTU_VERSION=ubuntu-20.04
 
   base-docker-22.04:
     extends: base-docker
     image: "base-docker:22.04"
     build:
       args:
-        - UBUNTU_VERSION=ubuntu:22.04
+        - UBUNTU_VERSION=ubuntu-22.04
 
   base-docker-24.04:
     extends: base-docker
     image: "base-docker:24.04"
     build:
       args:
-        - UBUNTU_VERSION=ubuntu:24.04
+        - UBUNTU_VERSION=ubuntu-24.04
 
   base-action-20.04:
     extends: base-docker
     image: "base-action:20.04"
     build:
       args:
-        - UBUNTU_VERSION=ubuntu:20.04
+        - UBUNTU_VERSION=ubuntu-20.04
       target: base-action
 
   base-action-22.04:
@@ -52,7 +52,7 @@ services:
     image: "base-action:22.04"
     build:
       args:
-        - UBUNTU_VERSION=ubuntu:22.04
+        - UBUNTU_VERSION=ubuntu-22.04
       target: base-action
 
   base-action-24.04:
@@ -60,7 +60,7 @@ services:
     image: "base-action:24.04"
     build:
       args:
-        - UBUNTU_VERSION=ubuntu:24.04
+        - UBUNTU_VERSION=ubuntu-24.04
       target: base-action
 
 secrets:
