@@ -4,6 +4,8 @@ on:
 env:
   IMAGE_NAME: base-docker
   UBUNTU_PRO_TOKEN: ${{ secrets.UBUNTU_PRO_TOKEN }}
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
