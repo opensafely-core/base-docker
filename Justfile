@@ -54,13 +54,18 @@ test: build
 
 # Update the files tracking the SHAs of ubuntu docker image
 update-docker-shas:
-  @just _update-sha "ubuntu:20.04"
-  @just _update-sha "ubuntu:22.04"
+  @just _update-image-digest "ubuntu" "20.04"
+  @just _update-image-digest "ubuntu" "22.04"
 
-_update-sha os:
-  echo {{ os }}
-  docker image pull {{ os }}
-  docker inspect --format='{{{{index .RepoDigests 0}}' {{ os }} > {{ os }}.sha
+_update-image-digest os version:
+  #!/bin/bash
+  set -euo pipefail
+  image_name={{ os }}:{{ version }}
+  echo "$image_name"
+  docker image pull "$image_name"
+  # Find the full qualified "repo digest" for this image
+  image_digest=$(docker inspect --format='{{{{join .RepoDigests "\n"}}' "$image_name" | grep -F '{{ os }}')
+  echo "$image_digest" > "$image_name.digest"
 
 
 publish-images:
