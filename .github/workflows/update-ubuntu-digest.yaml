@@ -1,4 +1,4 @@
-name: Update SHA of latest ubuntu images
+name: Update digest of latest ubuntu images
 # This is to workaround the 3mo timeout for GHA scheduled actions on repos with 
 # no new commits, by automatically creating new commits.
 on:
@@ -19,16 +19,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
     - uses: extractions/setup-just@69d82fb0233557aec017ef13706851d0694e0f1d
-    - name: update SHAs
-      run: just update-docker-shas
+    - name: update image digests
+      run: just update-docker-image-digests
     - name: Commit file
       run: |
         git status
-        git add "*.sha"
+        git add "*.digest"
         if git diff-index --quiet HEAD; then
           exit
         fi
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git commit -m "Update base image SHA files"
+        git commit -m "Update base image digest files"
         git push origin

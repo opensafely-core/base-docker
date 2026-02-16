@@ -52,8 +52,8 @@ test: build
   docker compose run $RUN_ARGS --rm -v {{justfile_directory()}}:/tests -w /tests "$ACTION_IMAGE_NAME-24.04" ./tests.sh
   ./check.sh
 
-# Update the files tracking the SHAs of ubuntu docker image
-update-docker-shas:
+# Update the files tracking the digests of ubuntu docker image
+update-docker-image-digests:
   @just _update-image-digest "ubuntu" "20.04"
   @just _update-image-digest "ubuntu" "22.04"
 
