@@ -11,24 +11,34 @@ env:
   BASE_IMAGE_NAME: base-docker
   ACTION_IMAGE_NAME: base-action
 permissions:
-  contents: write
+  contents: read
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v6
     - uses: extractions/setup-just@69d82fb0233557aec017ef13706851d0694e0f1d
     - name: update image digests
       run: just update-docker-image-digests
-    - name: Commit file
-      run: |
-        git status
-        git add "*.digest"
-        if git diff-index --quiet HEAD; then
-          exit
-        fi
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "Update base image digest files"
-        git push origin
+
+    - uses: actions/create-github-app-token@v2
+      id: generate-token
+      with:
+        app-id: ${{ vars.CREATE_PR_APP_ID }}
+        private-key: ${{ secrets.CREATE_PR_APP_PRIVATE_KEY }}
+
+    - name: Create a Pull Request if there are any changes
+      id: create_pr
+      uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0  # v8.1.0
+      with:
+        branch: bot/update-ubuntu-digest
+        add-paths: "*.digest"
+        base: main
+        author: "opensafely-github-bot <opensafely-github-bot@users.noreply.github.com>"
+        committer: "opensafely-github-bot <opensafely-github-bot@users.noreply.github.com>"
+        commit-message: "Update base image digest files"
+        title: "Update base image digest files"
+        body: Automated changes by [update-dependencies-action](https://github.com/bennettoxford/update-dependencies-action)
+        token: ${{ steps.generate-token.outputs.token }}
+        sign-commits: true
