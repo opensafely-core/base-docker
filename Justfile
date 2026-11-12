@@ -1,3 +1,5 @@
+import 'justfile.base'
+
 set dotenv-load := true
 
 export ACTION_IMAGE_NAME := env_var_or_default('ACTION_IMAGE_NAME', "base-action")
