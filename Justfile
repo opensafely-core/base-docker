@@ -1,89 +1,98 @@
+import 'justfile.base'
+
 set dotenv-load := true
 
 export ACTION_IMAGE_NAME := env_var_or_default('ACTION_IMAGE_NAME', "base-action")
 export UBUNTU_PRO_TOKEN_FILE := env_var_or_default('UBUNTU_PRO_TOKEN_FILE', justfile_directory() + "/.secrets/ubuntu_pro_token")
 
 _default:
-  @just --list
+    @just --list
 
 ensure-pro-token:
-  #!/bin/bash
-  set -euo pipefail
-  token_file="{{ UBUNTU_PRO_TOKEN_FILE }}"
-  if test -z "${UBUNTU_PRO_TOKEN:-}"; then
-    echo "UBUNTU_PRO_TOKEN is required to create $token_file" >&2
-    exit 1
-  fi
-  mkdir -p "$(dirname "$token_file")"
-  umask 077
-  printf '%s' "$UBUNTU_PRO_TOKEN" > "$token_file"
+    #!/bin/bash
+    set -euo pipefail
+    token_file="{{ UBUNTU_PRO_TOKEN_FILE }}"
+    if test -z "${UBUNTU_PRO_TOKEN:-}"; then
+      echo "UBUNTU_PRO_TOKEN is required to create $token_file" >&2
+      exit 1
+    fi
+    mkdir -p "$(dirname "$token_file")"
+    umask 077
+    printf '%s' "$UBUNTU_PRO_TOKEN" > "$token_file"
 
 # build all images
 build *args: ensure-pro-token
-  #!/bin/bash
-  set -euo pipefail
-  export DOCKER_BUILDKIT=1
-  export BASE_CREATED=$(date --utc +'%Y-%m-%dT%H:%M:%S+00:00')
-  export BASE_GITREF=$(git rev-parse --short HEAD)
-  docker compose build --pull {{ args }}
+    #!/bin/bash
+    set -euo pipefail
+    export DOCKER_BUILDKIT=1
+    export BASE_CREATED=$(date --utc +'%Y-%m-%dT%H:%M:%S+00:00')
+    export BASE_GITREF=$(git rev-parse --short HEAD)
+    docker compose build --pull {{ args }}
 
 clean-build: (build "--no-cache")
 
-# hadolint the Dockerfile
+@lint-docker:
+    {{ docker_run_safe }} -i ghcr.io/hadolint/hadolint:{{ hadolint_version }} < Dockerfile
+
+@shellcheck:
+    {{ docker_run_safe }} -v "$PWD:/mnt:ro" koalaman/shellcheck:{{ shellcheck_version }} *.sh
+
+@lint-actions:
+    {{ docker_run_safe }} -v $(pwd):/repo:ro --workdir /repo kjanat/actionlint:{{ actionlint_version }} -color
+
 lint:
-  @docker run --rm -i hadolint/hadolint < Dockerfile
-  @ls *.sh | xargs docker run --rm -v "$PWD:/mnt:ro" koalaman/shellcheck:v0.11.0
-  @docker run --rm -v "$PWD:/repo:ro" --workdir /repo rhysd/actionlint:1.7.10 -color
+    -just lint-docker
+    -just shellcheck
+    -just lint-actions
 
 # build and test all images
 test: build
-  #!/bin/bash
-  set -euxo pipefail
+    #!/bin/bash
+    set -euxo pipefail
 
-  if test -t 0
-  then
-    export RUN_ARGS=-it
-  else
-    export RUN_ARGS=
-  fi
+    if test -t 0
+    then
+      export RUN_ARGS=-it
+    else
+      export RUN_ARGS=
+    fi
 
-  docker compose run $RUN_ARGS --rm -v {{justfile_directory()}}:/tests -w /tests "$ACTION_IMAGE_NAME-20.04" ./tests.sh
-  docker compose run $RUN_ARGS --rm -v {{justfile_directory()}}:/tests -w /tests "$ACTION_IMAGE_NAME-22.04" ./tests.sh
-  docker compose run $RUN_ARGS --rm -v {{justfile_directory()}}:/tests -w /tests "$ACTION_IMAGE_NAME-24.04" ./tests.sh
-  ./check.sh
+    docker compose run $RUN_ARGS --rm -v {{ justfile_directory() }}:/tests -w /tests "$ACTION_IMAGE_NAME-20.04" ./tests.sh
+    docker compose run $RUN_ARGS --rm -v {{ justfile_directory() }}:/tests -w /tests "$ACTION_IMAGE_NAME-22.04" ./tests.sh
+    docker compose run $RUN_ARGS --rm -v {{ justfile_directory() }}:/tests -w /tests "$ACTION_IMAGE_NAME-24.04" ./tests.sh
+    ./check.sh
 
 # Update the files tracking the digests of ubuntu docker image
 update-docker-image-digests:
-  @just _update-image-digest "ubuntu" "20.04"
-  @just _update-image-digest "ubuntu" "22.04"
+    @just _update-image-digest "ubuntu" "20.04"
+    @just _update-image-digest "ubuntu" "22.04"
 
 _update-image-digest os version:
-  #!/bin/bash
-  set -euo pipefail
-  image_name={{ os }}:{{ version }}
-  echo "$image_name"
-  docker image pull "$image_name"
-  # Find the full qualified "repo digest" for this image
-  image_digest=$(docker inspect --format='{{{{join .RepoDigests "\n"}}' "$image_name" | grep -F '{{ os }}')
-  echo "$image_digest" > "$image_name.digest"
-
+    #!/bin/bash
+    set -euo pipefail
+    image_name={{ os }}:{{ version }}
+    echo "$image_name"
+    docker image pull "$image_name"
+    # Find the full qualified "repo digest" for this image
+    image_digest=$(docker inspect --format='{{{{join .RepoDigests "\n"}}' "$image_name" | grep -F '{{ os }}')
+    echo "$image_digest" > "$image_name.digest"
 
 publish-images:
-  #!/bin/bash
-  set -euo pipefail
-  for version in 20.04 22.04 24.04
-  do 
-      for image_name in base-docker base-action
-      do
-        image="$image_name:$version"
-        full="ghcr.io/opensafely-core/$image"
-        docker tag $image $full
-        docker push $full
-      done
-  done
+    #!/bin/bash
+    set -euo pipefail
+    for version in 20.04 22.04 24.04
+    do 
+        for image_name in base-docker base-action
+        do
+          image="$image_name:$version"
+          full="ghcr.io/opensafely-core/$image"
+          docker tag $image $full
+          docker push $full
+        done
+    done
 
-  # latest tags are 20.04 for b/w compat
-  docker tag base-docker:20.04 ghcr.io/opensafely-core/base-docker:latest
-  docker tag base-action:20.04 ghcr.io/opensafely-core/base-action:latest
-  docker push ghcr.io/opensafely-core/base-docker:latest
-  docker push ghcr.io/opensafely-core/base-action:latest
+    # latest tags are 20.04 for b/w compat
+    docker tag base-docker:20.04 ghcr.io/opensafely-core/base-docker:latest
+    docker tag base-action:20.04 ghcr.io/opensafely-core/base-action:latest
+    docker push ghcr.io/opensafely-core/base-docker:latest
+    docker push ghcr.io/opensafely-core/base-action:latest
