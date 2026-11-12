@@ -31,11 +31,19 @@ build *args: ensure-pro-token
 
 clean-build: (build "--no-cache")
 
-# hadolint the Dockerfile
+@lint-docker:
+    {{ docker_run_safe }} -i ghcr.io/hadolint/hadolint:{{ hadolint_version }} < Dockerfile
+
+@shellcheck:
+    {{ docker_run_safe }} -v "$PWD:/mnt:ro" koalaman/shellcheck:{{ shellcheck_version }} *.sh
+
+@lint-actions:
+    {{ docker_run_safe }} -v $(pwd):/repo:ro --workdir /repo kjanat/actionlint:{{ actionlint_version }} -color
+
 lint:
-    @docker run --rm -i hadolint/hadolint < Dockerfile
-    @ls *.sh | xargs docker run --rm -v "$PWD:/mnt:ro" koalaman/shellcheck:v0.11.0
-    @docker run --rm -v "$PWD:/repo:ro" --workdir /repo rhysd/actionlint:1.7.10 -color
+    -just lint-docker
+    -just shellcheck
+    -just lint-actions
 
 # build and test all images
 test: build
