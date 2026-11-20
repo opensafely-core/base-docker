@@ -2,5 +2,37 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>bennettoxford/renovate-config:default.json5",
+  ],
+  "customManagers": [
+    // Custom manager to update the UBUNTU_VERSION image tags/digests in the docker compose file
+    // These don't get automatically picked up by the docker package manager as they would when
+    // declared in a Dockerfile
+    // The default.json5 preset already pins docker digests, so we don't need any extra package rules
+    {
+      "customType": "regex",
+      "description": "Update Ubuntu base image tags and digests in docker compose build args",
+      "managerFilePatterns": ["/(^|/)docker-compose\\.ya?ml$/"],
+      "matchStrings": [
+        // Match an Ubuntu image passed as a Compose build argument, with or without a digest:
+        //   - UBUNTU_VERSION=ubuntu:24.04
+        //   - UBUNTU_VERSION=ubuntu:24.04@sha256:<64 hex characters>
+        //
+        // (?<indentation>[ \t]*)   Preserve the line's leading spaces for replacement.
+        // -[ \t]+                  Match the YAML list item and its separating spaces.
+        // UBUNTU_VERSION=ubuntu:   Match this specific build argument and image name.
+        // (?<currentValue>[^@\s]+) Capture the tag, stopping before a digest or whitespace.
+        // (?:@(?<currentDigest>...))?
+        //                            Optionally capture the SHA-256 digest separately.
+        //                            This lets Renovate update the tag and digest independently.
+        "(?<indentation>[ \\t]*)-[ \\t]+UBUNTU_VERSION=ubuntu:(?<currentValue>[^@\\s]+)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
+      ],
+      "depNameTemplate": "ubuntu",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker",
+      // Rebuild the entire matched argument after Renovate changes it.
+      // Keep the original indentation, insert the updated tag, and append a digest
+      // only when Renovate provides one (including during digest pinning).
+      "autoReplaceStringTemplate": "{{{indentation}}}- UBUNTU_VERSION=ubuntu:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{/if}}"
+    }
   ]
 }
