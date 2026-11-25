@@ -9,7 +9,7 @@ export UBUNTU_PRO_TOKEN_FILE := env_var_or_default('UBUNTU_PRO_TOKEN_FILE', just
 _default:
     @just --list
 
-fetch_renovate_recipes:
+fetch-renovate-recipes:
     curl -fsSL https://raw.githubusercontent.com/bennettoxford/renovate-config/main/justfile.renovate -o justfile.renovate
 
 ensure-pro-token:
