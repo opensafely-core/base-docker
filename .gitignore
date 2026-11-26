@@ -1,3 +1,4 @@
 bash.link
 .secrets/
 .env
+justfile.renovate

@@ -1,10 +1,16 @@
 # syntax=docker/dockerfile:1.10
 # enable docker linting
 # check=error=true
-ARG UBUNTU_VERSION=ubuntu:20.04
-# we are parameterizing the base image, so we can't be explicit like DL3006 wants us to be
-# hadolint ignore=DL3006
-FROM $UBUNTU_VERSION as base-docker
+
+# this must come before FROM lines
+ARG UBUNTU_VERSION=ubuntu-20.04
+
+# Include each version so that Renovate can pin digests and update them
+FROM ubuntu:20.04@sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214 AS ubuntu-20.04
+FROM ubuntu:22.04@sha256:f64b2ffc2f10ab8f8505aa56b2664bd846cbb9df87c7e2532e30f7667021c0e6 AS ubuntu-22.04
+FROM ubuntu:24.04@sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289 AS ubuntu-24.04
+
+FROM $UBUNTU_VERSION AS base-docker
 
 # default env vars
 ENV container=docker DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8
