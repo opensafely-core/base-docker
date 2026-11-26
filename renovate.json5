@@ -2,14 +2,5 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>bennettoxford/renovate-config:default.json5",
-  ],
-  "packageRules": [
-    {
-      description: "Keep Dockerfile Ubuntu tags fixed while allowing digest updates",
-      matchManagers: ["dockerfile"],
-      matchDatasources: ["docker"],
-      matchDepNames: ["ubuntu"],
-      versioning: "exact",
-    }
   ]
 }
