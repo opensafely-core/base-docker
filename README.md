@@ -17,7 +17,7 @@ images saves over 100MB, typically. This scrips also provides some
 conveniences, allowing use of text file with comments to list, and also
 supports enabling ESM repositories.
 
-It is rebuilt and publish weekly, so there's always a fresh base to build from.
+It is rebuilt and published weekly, so there's always a fresh base to build from.
 
 ## base-action
 
